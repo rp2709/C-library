@@ -16,3 +16,6 @@ target_link_libraries(LibStack LibUtils)
 
 add_subdirectory(lists)
 target_link_libraries(LibList LibUtils)
+
+add_subdirectory(hash_map)
+target_link_libraries(LibHMap LibUtils LibList)
