@@ -13,3 +13,6 @@ target_link_libraries(LibDyna LibUtils)
 
 add_subdirectory(stack)
 target_link_libraries(LibStack LibUtils)
+
+add_subdirectory(lists)
+target_link_libraries(LibList LibUtils)
