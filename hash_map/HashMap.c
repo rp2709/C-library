@@ -48,9 +48,10 @@ status hmap_free(hash_map *map) {
             list_at(it, &pair);
             hm_pair_free(&pair);
         }
-
         list_free(bucket);
     }
+    map->capacity = 0;
+    return OK;
 }
 
 status hmap_insert(hash_map *map, arbitrary_pointer key, arbitrary_pointer value) {
@@ -74,17 +75,45 @@ status hmap_insert(hash_map *map, arbitrary_pointer key, arbitrary_pointer value
     return OK;
 }
 
-status hmap_set(hash_map *map, arbitrary_pointer key, arbitrary_pointer value);
-
-status hmap_remove(hash_map *map, arbitrary_pointer key);
-
-status hmap_get(const hash_map *map, arbitrary_pointer key, arbitrary_pointer value) {
+status find_and_apply(hash_map *map, arbitrary_pointer key, arbitrary_pointer value,
+                      void(*function)(arbitrary_pointer, arbitrary_pointer, sizetype))
+{
     list* bucket = &(map->buckets[bucket_index(map,key)]);
     _hmap_pair pair;
     for (list_iterator it = list_begin(bucket); list_has_next(it); list_next(&it)) {
         list_at(it,&pair);
         if (memequal(key,pair.key,map->key_size)) {
-            memcopy(pair.value,value,map->value_size);
+            memcopy(value,pair.value,map->value_size);
+            return OK;
+        }
+    }
+    return ERROR;
+}
+
+void set_apply(arbitrary_pointer value, arbitrary_pointer destination, sizetype value_size) {
+    memcopy(value,destination,value_size);
+}
+
+status hmap_set(hash_map *map, arbitrary_pointer key, arbitrary_pointer value) {
+    return find_and_apply(map, key, value, set_apply);
+}
+
+void get_apply(arbitrary_pointer destination, arbitrary_pointer value, sizetype value_size) {
+    memcopy(value,destination,value_size);
+}
+
+status hmap_get(const hash_map *map, arbitrary_pointer key, arbitrary_pointer value) {
+    return find_and_apply(map, key, value, get_apply);
+}
+
+status hmap_remove(hash_map *map, arbitrary_pointer key) {
+    list* bucket = &(map->buckets[bucket_index(map,key)]);
+    _hmap_pair pair;
+    for (list_iterator it = list_begin(bucket); list_has_next(it); list_next(&it)) {
+        list_at(it,&pair);
+        if (memequal(key,pair.key,map->key_size)) {
+            list_remove(it);
+            hm_pair_free(&pair);
             return OK;
         }
     }
