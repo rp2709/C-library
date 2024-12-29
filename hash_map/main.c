@@ -43,5 +43,7 @@ int main() {
     s = hmap_get(&map,"BIKE",&value);
     s = hmap_get(&map,"BOAT",&value);
 
+    hmap_free(&map);
+
     return 0;
 }
