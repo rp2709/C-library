@@ -18,7 +18,7 @@ status cibu_init(circular_buffer *buffer, sizetype object_size) {
     buffer->object_size = object_size;
     buffer->length = 0;
     buffer->data = nullptr;
-    return OK;
+    return cibu_reserve(buffer,1);
 }
 
 status cibu_free(circular_buffer *buffer) {

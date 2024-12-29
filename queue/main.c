@@ -59,9 +59,12 @@ int main(int argc, char** argv){
         pedantic_assert(fifo_push(&queue,&i));
     }
 
-    for(int i=0;i<10;i++) {
+    printf("Queue : [");
+    for(int i=0;i<5;i++) {
         pedantic_assert(fifo_pop(&queue,&value));
+        printf("%d ",value);
     }
+    printf("]\n");
 
     pedantic_assert(fifo_put_back(&queue,&value));
 

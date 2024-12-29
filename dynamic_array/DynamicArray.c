@@ -11,7 +11,7 @@ status dyna_init(dynamic_array* dyna, sizetype object_size){
     dyna->data = nullptr;
     dyna->capacity = 0;
     dyna->length = 0;
-    return OK;
+    return dyna_reserve(dyna,1);
 }
 
 status dyna_reserve(dynamic_array* dyna, sizetype capacity){

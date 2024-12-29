@@ -6,7 +6,6 @@ int main() {
 
   dynamic_array arr;
   dyna_init(&arr, sizeof(int));
-  dyna_reserve(&arr,1);
 
   for (int i = 0; i < 10; i++) {
     dyna_append(&arr, &i);
