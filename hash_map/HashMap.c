@@ -2,27 +2,28 @@
 
 #include <stdlib.h>
 
-sizetype basic_universal_hash(arbitrary_pointer key, sizetype key_size) {
-    byte *key_bytes = key;
-    sizetype hash = 0;
-    for (sizetype i = 0; i < key_size; i++) {
-        hash += key_bytes[i];
+void hm_pair_free(_hmap_pair* pair) {
+    if (pair == nullptr) return;
+    if (pair->key != nullptr) {
+        free(pair->key);
+        pair->key = nullptr;
     }
-    return hash;
+    if (pair->value != nullptr) {
+        free(pair->value);
+        pair->value = nullptr;
+    }
 }
 
 sizetype bucket_index(const hash_map* hm, arbitrary_pointer key) {
-    return hm->hash_function(key,hm->key_size) % hm->capacity;
+    return hm->hash(key) % hm->capacity;
 }
 
-status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype initial_capacity, universal_hash_function hash_function) {
+status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype initial_capacity, hash_function hash, equal_function is_equal) {
     map->key_size = key_size;
     map->value_size = value_size;
 
-    if (hash_function != nullptr)
-        map->hash_function = hash_function;
-    else
-        map->hash_function = basic_universal_hash;
+    map->is_equal = is_equal;
+    map->hash = hash;
 
     map->buckets = malloc(initial_capacity * sizeof(list));
     if (map->buckets == nullptr)
@@ -38,7 +39,19 @@ status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype
     return OK;
 }
 
-status hmap_free(hash_map *map);
+status hmap_free(hash_map *map) {
+    for (sizetype i = 0; i < map->capacity; ++i) {
+        list* bucket = &(map->buckets[i]);
+
+        _hmap_pair pair;
+        for (list_iterator it = list_begin(bucket); list_has_next(it); list_next(&it)) {
+            list_at(it, &pair);
+            hm_pair_free(&pair);
+        }
+
+        list_free(bucket);
+    }
+}
 
 status hmap_insert(hash_map *map, arbitrary_pointer key, arbitrary_pointer value) {
     list* bucket = &(map->buckets[bucket_index(map,key)]);
