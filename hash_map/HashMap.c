@@ -83,7 +83,7 @@ status find_and_apply(hash_map *map, arbitrary_pointer key, arbitrary_pointer va
     for (list_iterator it = list_begin(bucket); list_has_next(it); list_next(&it)) {
         list_at(it,&pair);
         if (memequal(key,pair.key,map->key_size)) {
-            memcopy(value,pair.value,map->value_size);
+            function(value,pair.value,map->value_size);
             return OK;
         }
     }
@@ -103,7 +103,7 @@ void get_apply(arbitrary_pointer destination, arbitrary_pointer value, sizetype 
 }
 
 status hmap_get(const hash_map *map, arbitrary_pointer key, arbitrary_pointer value) {
-    return find_and_apply(map, key, value, get_apply);
+    return find_and_apply((hash_map*)map, key, value, get_apply);
 }
 
 status hmap_remove(hash_map *map, arbitrary_pointer key) {

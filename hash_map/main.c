@@ -32,16 +32,25 @@ int main() {
     hmap_insert(&map,"PLANE",&value);
     value = CAR;
     hmap_insert(&map,"CAR",&value);
+    value = BIKE;
+    hmap_insert(&map,"BIKE",&value);
     value = BOAT;
     hmap_insert(&map,"BOAT",&value);
 
-    status s;
+    pedantic_assert(hmap_get(&map,"SHIP",&value));
+    pedantic_assert(hmap_get(&map,"PLANE",&value));
+    pedantic_assert(hmap_get(&map,"CAR",&value));
+    pedantic_assert(hmap_get(&map,"BIKE",&value));
+    pedantic_assert(hmap_get(&map,"BOAT",&value));
 
-    s = hmap_get(&map,"SHIP",&value);
-    s = hmap_get(&map,"PLANE",&value);
-    s = hmap_get(&map,"CAR",&value);
-    s = hmap_get(&map,"BIKE",&value);
-    s = hmap_get(&map,"BOAT",&value);
+    pedantic_assert(hmap_remove(&map,"BOAT"));
+
+    pedantic_assert(hmap_get(&map,"SHIP",&value));
+    pedantic_assert(hmap_get(&map,"PLANE",&value));
+    pedantic_assert(hmap_get(&map,"CAR",&value));
+    pedantic_assert(hmap_get(&map,"BIKE",&value));
+    //this next line causes an expected crash
+    pedantic_assert(hmap_get(&map,"BOAT",&value));
 
     hmap_free(&map);
 
