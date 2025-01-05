@@ -51,11 +51,20 @@ status dyna_pop_back(dynamic_array* dyna){
     return OK;
 }
 
-status dyna_at(dynamic_array* dyna, sizetype index, arbitrary_pointer result){
+status dyna_get_at(dynamic_array* dyna, sizetype index, arbitrary_pointer result){
     if(index >= dyna->length)
         return ERROR;
 
     memcopy(dyna->data + index * dyna->object_size,result,dyna->object_size);
+
+    return OK;
+}
+
+status dyna_set_at(dynamic_array* dyna, sizetype index, arbitrary_pointer value) {
+    if(index >= dyna->length)
+        return ERROR;
+
+    memcopy(value,dyna->data + index * dyna->object_size,dyna->object_size);
 
     return OK;
 }

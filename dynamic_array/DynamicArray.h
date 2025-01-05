@@ -47,7 +47,12 @@ status dyna_pop_back(dynamic_array* dyna);
 /**
  * Copies the object at "index" in result
  */
-status dyna_at(dynamic_array* dyna, sizetype index, arbitrary_pointer result);
+status dyna_get_at(dynamic_array* dyna, sizetype index, arbitrary_pointer result);
+
+/**
+ * Sets element at "index" to "value"
+ */
+status dyna_set_at(dynamic_array* dyna, sizetype index, arbitrary_pointer value);
 
 /**
  * Destroys a dynamic array

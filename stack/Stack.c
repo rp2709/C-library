@@ -12,9 +12,9 @@ status stack_push(stack *s, arbitrary_pointer value) {
     return dyna_append(s,value);
 }
 status stack_pop(stack *s, arbitrary_pointer value) {
-    dyna_at(s,s->length - 1,value);
+    dyna_get_at(s,s->length - 1,value);
     return dyna_pop_back(s);
 }
 status stack_peek(stack *s, arbitrary_pointer value) {
-    return dyna_at(s,s->length - 1,value);
+    return dyna_get_at(s,s->length - 1,value);
 }

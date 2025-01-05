@@ -11,6 +11,9 @@ target_link_libraries(LibQueue LibUtils)
 add_subdirectory(dynamic_array)
 target_link_libraries(LibDyna LibUtils)
 
+add_subdirectory(string)
+target_link_libraries(LibString LibDyna LibUtils)
+
 add_subdirectory(stack)
 target_link_libraries(LibStack LibUtils)
 

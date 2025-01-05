@@ -15,7 +15,7 @@ int main() {
   int value;
   printf("\narray : [");
   for (int i = 0; i < arr.length; i++) {
-    dyna_at(&arr, i, &value);
+    dyna_get_at(&arr, i, &value);
     printf("%d ", value);
   }
   printf("]\n");
