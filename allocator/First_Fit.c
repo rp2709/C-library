@@ -58,7 +58,7 @@ chunk_info* get_chunk_info(arbitrary_pointer chunk_start) {
 }
 
 status allocate_chunk(sizetype size) {
-    chunk_info* new_chunk = mmap(nullptr,PAGE_LENGTH,PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE,-1,0);
+    chunk_info* new_chunk = mmap(nullptr,size,PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE,-1,0);
     if (new_chunk == MAP_FAILED)
         return ERROR;
 
@@ -106,12 +106,12 @@ status give_chunk(chunk_info* chunk, sizetype size) {
 
     // we need to create a new chunk with memory leftovers
     chunk_info* new_chunk = (arbitrary_pointer)chunk->start_address + chunk->size;
+
     new_chunk->next = chunk->next;
     new_chunk->prev = chunk;
-    chunk->next = new_chunk;
 
-    if (chunk->prev == chunk)
-        chunk->prev = new_chunk;
+    chunk->next = new_chunk;
+    new_chunk->next->prev = new_chunk;
 
     new_chunk->size = original_size - size - sizeof(chunk_info);
     new_chunk->freed = true;
@@ -143,12 +143,12 @@ arbitrary_pointer ff_malloc(sizetype size) {
     }while (HEAD != start);
 
     // We need to allocate more
-    if (!allocate_chunk(TOTAL_SIZE).success)
+    if (!allocate_chunk((size < TOTAL_SIZE ? TOTAL_SIZE : size)).success)
         return nullptr;
 
     chunk_info* chunk_given = HEAD;
-    HEAD = HEAD->next;
     give_chunk(chunk_given, size);
+    HEAD = HEAD->next;
     return chunk_given->start_address;
 }
 

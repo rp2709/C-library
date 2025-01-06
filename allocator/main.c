@@ -40,7 +40,7 @@ int main() {
   }
 
   // One enormous chunk
-  *pointers = allocator->malloc(1000000);
+  *pointers = allocator->malloc(5000000000);
   allocator->free(*pointers);
 
   return 0;
