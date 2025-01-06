@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(utils)
 
+add_subdirectory(allocator)
+target_link_libraries(LibAlloc LibUtils)
+
 add_subdirectory(queue)
 target_link_libraries(LibQueue LibUtils)
 
