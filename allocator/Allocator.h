@@ -19,4 +19,7 @@ extern allocator_implementation BEST_FIT;
 extern allocator_implementation QUICK_FIT;
 extern allocator_implementation STANDARD;
 
+//#### DEBUG #####
+void print_debug_info();
+
 #endif //ALLOCATOR_H

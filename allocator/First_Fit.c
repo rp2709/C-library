@@ -25,6 +25,10 @@ void merge_chunks(chunk_info* first, chunk_info* second) {
     // Update size
     first->size += second->size + sizeof(chunk_info);
 
+    // Make sure HEAD isn't pointing at soon gone second
+    if (second == HEAD)
+        HEAD = first;
+
     //special case, remove only other chunk_info in list
     if (first->next == first->prev) {
         first->next = first;
@@ -76,10 +80,13 @@ status allocate_chunk(sizetype size) {
         return OK;
     }
 
-    new_chunk->next = HEAD;
     new_chunk->prev = HEAD->prev;
     HEAD->prev = new_chunk;
 
+    new_chunk->prev->next = new_chunk;
+    new_chunk->next = HEAD;
+
+    // Place head on the new free chunk
     HEAD = new_chunk;
 
     return OK;
@@ -195,3 +202,25 @@ allocator_implementation FIRST_FIT = {
     ff_free,
     ff_reallocate
 };
+
+
+// ########## DEBUG ############
+
+#include <stdio.h>
+void print_debug_info() {
+    sizetype size_count = 0,chunk_count = 0;
+    chunk_info* start = HEAD;
+    printf("\n[ ");
+    do {
+        printf("%d ", HEAD->size);
+        size_count += HEAD->size + sizeof(chunk_info);
+        chunk_count++;
+
+        HEAD = HEAD->next;
+    }while (HEAD != start);
+    printf("]\n");
+
+    printf("Expected size : %ld\nReal size : %ld\n\n",TOTAL_SIZE,size_count);
+
+    printf("Chunk count : %ld\n\n",chunk_count);
+}
