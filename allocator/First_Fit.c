@@ -5,15 +5,15 @@
 #define PAGE_LENGTH 4096
 
 // First fit implementation
-struct chunk_info{
+struct __attribute__((__packed__)) chunk_info{
     struct chunk_info* next;
     struct chunk_info* prev;
 
     bool freed;
 
-    sizetype size;
+    uint32 size;
     arbitrary_pointer start_address[0];
-};
+} ;
 typedef struct chunk_info chunk_info;
 
 // ############### Variables #########
@@ -24,6 +24,14 @@ sizetype TOTAL_SIZE = 0;
 void merge_chunks(chunk_info* first, chunk_info* second) {
     // Update size
     first->size += second->size + sizeof(chunk_info);
+
+    //special case, remove only other chunk_info in list
+    if (first->next == first->prev) {
+        first->next = first;
+        first->prev = first;
+        HEAD = first;
+        return;
+    }
 
     // Update links
     first->next = second->next;
@@ -102,6 +110,9 @@ status give_chunk(chunk_info* chunk, sizetype size) {
     new_chunk->prev = chunk;
     chunk->next = new_chunk;
 
+    if (chunk->prev == chunk)
+        chunk->prev = new_chunk;
+
     new_chunk->size = original_size - size - sizeof(chunk_info);
     new_chunk->freed = true;
 
@@ -125,8 +136,8 @@ arbitrary_pointer ff_malloc(sizetype size) {
 
         // Found one
         chunk_info* chunk_given = HEAD;
-        HEAD = HEAD->next;
         give_chunk(chunk_given, size);
+        HEAD = HEAD->next;
         return chunk_given->start_address;
 
     }while (HEAD != start);
