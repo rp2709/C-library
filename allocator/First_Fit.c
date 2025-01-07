@@ -103,13 +103,13 @@ status give_chunk(chunk_info* chunk, sizetype size) {
     if (chunk->size < size)
         return ERROR;
 
-    sizetype original_size = chunk->size;
-
-    chunk->size = size;
     chunk->freed = false;
 
-    if (size == original_size)
+    if (size == chunk->size || chunk->size - size < sizeof(chunk_info) + 1 )
         return OK;
+
+    sizetype original_size = chunk->size;
+    chunk->size = size;
 
     // we need to create a new chunk with memory leftovers
     chunk_info* new_chunk = (arbitrary_pointer)chunk->start_address + chunk->size;
