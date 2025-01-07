@@ -171,13 +171,19 @@ status ff_free(arbitrary_pointer ptr) {
 }
 
 status ff_reallocate(arbitrary_pointer* ptr, sizetype size) {
+    // reallocate on nullptr simply calls malloc
+    if (*ptr == nullptr) {
+        *ptr = ff_malloc(size);
+        return (*ptr == nullptr) ? ERROR : OK;
+    }
+
     chunk_info* chunk = get_chunk_info(*ptr);
 
     if (size < chunk->size)
         return ERROR;
 
     // Check if we can merge with the next one
-    if (chunk->next->freed && chunk->start_address + chunk->size == (arbitrary_pointer)chunk->next) {
+    if (chunk->next->freed && (arbitrary_pointer)chunk->start_address + chunk->size == (arbitrary_pointer)chunk->next) {
         merge_chunks(chunk, chunk->next);
         give_chunk(chunk, size);
         return OK;
