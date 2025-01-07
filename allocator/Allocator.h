@@ -5,6 +5,11 @@
 #include "../utils/Status.h"
 #include "../utils/generics_utils.h"
 
+/**
+ * This is a basic allocator interface
+ * All the library uses it, and therefor can easily use different allocator implementations
+ * You get to tailor the data structures for space or time efficiency.
+ */
 struct allocator {
     arbitrary_pointer (*malloc)(sizetype size);
     status (*free)(arbitrary_pointer ptr);
@@ -13,11 +18,21 @@ struct allocator {
 typedef struct allocator allocator_implementation;
 
 // ===== Implementations =====
-// Fastest and simplest implementation, but will end up fragmenting memory
+/**
+ * Fastest and simplest implementation, but will end up fragmenting memory
+ * It performs even better than the standard, but if available, use standard for obvious safety reasons
+ */
 extern allocator_implementation FIRST_FIT;
-extern allocator_implementation BEST_FIT;
-extern allocator_implementation QUICK_FIT;
+
+/** Wrapper around C standard malloc library
+ * Enables all project's data structures to use standard allocator as well
+ * THIS IS THE ONE YOU WANT TO BE USING
+ */
 extern allocator_implementation STANDARD;
+
+// - - - -  Future projects - - - -
+//extern allocator_implementation BEST_FIT;
+//extern allocator_implementation QUICK_FIT;
 
 //#### DEBUG #####
 void print_debug_info();

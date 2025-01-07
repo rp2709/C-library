@@ -29,14 +29,6 @@ void merge_chunks(chunk_info* first, chunk_info* second) {
     if (second == HEAD)
         HEAD = first;
 
-    //special case, remove only other chunk_info in list
-    if (first->next == first->prev) {
-        first->next = first;
-        first->prev = first;
-        HEAD = first;
-        return;
-    }
-
     // Update links
     first->next = second->next;
     first->next->prev = first;
@@ -82,7 +74,6 @@ status allocate_chunk(sizetype size) {
 
     new_chunk->prev = HEAD->prev;
     HEAD->prev = new_chunk;
-
     new_chunk->prev->next = new_chunk;
     new_chunk->next = HEAD;
 
@@ -113,13 +104,10 @@ status give_chunk(chunk_info* chunk, sizetype size) {
 
     // we need to create a new chunk with memory leftovers
     chunk_info* new_chunk = (arbitrary_pointer)chunk->start_address + chunk->size;
-
     new_chunk->next = chunk->next;
     new_chunk->prev = chunk;
-
     chunk->next = new_chunk;
     new_chunk->next->prev = new_chunk;
-
     new_chunk->size = original_size - size - sizeof(chunk_info);
     new_chunk->freed = true;
 
