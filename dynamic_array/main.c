@@ -5,12 +5,11 @@
 int main() {
 
   dynamic_array arr;
-  dyna_init(&arr, sizeof(int));
+  dyna_init(&arr, sizeof(int),&FIRST_FIT);
 
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 1000; i++) {
     dyna_append(&arr, &i);
   }
-
 
   int value;
   printf("\narray : [");
@@ -19,6 +18,8 @@ int main() {
     printf("%d ", value);
   }
   printf("]\n");
+
+  dyna_free(&arr);
 
   return 0;
 }

@@ -5,6 +5,7 @@
 
 #include "../utils/Types.h"
 #include "../utils/Status.h"
+#include "../allocator/Allocator.h"
 
 extern status DYNA_ALLOCATION_ERROR;
 extern status DYNA_ILLEGAL_OPERATION;
@@ -21,12 +22,14 @@ typedef struct{
     sizetype capacity;
 
     sizetype object_size;
+    allocator_implementation* allocator;
 }dynamic_array;
 
 /**
- * Initialize a dynamic array of capacity 0
+ * Initialize a dynamic array of capacity 1
+ * If allocator_implementation is nullptr, standard allocator will be used
  */
-status dyna_init(dynamic_array* dyna, sizetype object_size);
+status dyna_init(dynamic_array* dyna, sizetype object_size, allocator_implementation* allocator);
 
 /**
  * Allocates capacity for "size" elements
