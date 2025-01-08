@@ -1,15 +1,13 @@
 #include "HashMap.h"
 
-#include <stdlib.h>
-
-void hm_pair_free(_hmap_pair* pair) {
+void hm_pair_free(_hmap_pair* pair, allocator_implementation* allocator) {
     if (pair == nullptr) return;
     if (pair->key != nullptr) {
-        free(pair->key);
+        allocator->free(pair->key);
         pair->key = nullptr;
     }
     if (pair->value != nullptr) {
-        free(pair->value);
+        allocator->free(pair->value);
         pair->value = nullptr;
     }
 }
@@ -18,14 +16,16 @@ sizetype bucket_index(const hash_map* hm, arbitrary_pointer key) {
     return hm->hash(key) % hm->capacity;
 }
 
-status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype initial_capacity, hash_function hash, equal_function is_equal) {
+status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype initial_capacity, hash_function hash, equal_function is_equal, allocator_implementation* allocator) {
+    map->allocator = allocator;
+
     map->key_size = key_size;
     map->value_size = value_size;
 
     map->is_equal = is_equal;
     map->hash = hash;
 
-    map->buckets = malloc(initial_capacity * sizeof(list));
+    map->buckets = map->allocator->malloc(initial_capacity * sizeof(list));
     if (map->buckets == nullptr)
         return ERROR;
 
@@ -46,7 +46,7 @@ status hmap_free(hash_map *map) {
         _hmap_pair pair;
         for (list_iterator it = list_begin(bucket); list_has_next(it); list_next(&it)) {
             list_at(it, &pair);
-            hm_pair_free(&pair);
+            hm_pair_free(&pair,map->allocator);
         }
         list_free(bucket);
     }
@@ -57,12 +57,12 @@ status hmap_free(hash_map *map) {
 status hmap_insert(hash_map *map, arbitrary_pointer key, arbitrary_pointer value) {
     list* bucket = &(map->buckets[bucket_index(map,key)]);
 
-    arbitrary_pointer value_storage = malloc(map->value_size);
+    arbitrary_pointer value_storage = map->allocator->malloc(map->value_size);
     if (value_storage == nullptr)
         return ERROR;
-    arbitrary_pointer key_storage = malloc(map->key_size);
+    arbitrary_pointer key_storage = map->allocator->malloc(map->key_size);
     if (key_storage == nullptr) {
-        free(value_storage);
+        map->allocator->free(value_storage);
         return ERROR;
     }
 
@@ -113,7 +113,7 @@ status hmap_remove(hash_map *map, arbitrary_pointer key) {
         list_at(it,&pair);
         if (memequal(key,pair.key,map->key_size)) {
             list_remove(it);
-            hm_pair_free(&pair);
+            hm_pair_free(&pair,map->allocator);
             return OK;
         }
     }

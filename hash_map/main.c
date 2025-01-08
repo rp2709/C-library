@@ -23,7 +23,7 @@ enum transport {SHIP,PLANE,CAR,BIKE,BOAT};
 int main() {
 
     hash_map map;
-    hmap_init(&map,sizeof(const char*),sizeof(enum transport),10,str_hash,str_equal);
+    hmap_init(&map,sizeof(const char*),sizeof(enum transport),10,str_hash,str_equal,&FIRST_FIT);
 
     enum transport value;
     value = SHIP;

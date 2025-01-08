@@ -2,6 +2,7 @@
 #define HASHMAP_H
 
 #include "../lists/LinkedList.h"
+#include "../allocator/Allocator.h"
 
 typedef sizetype (*hash_function)(arbitrary_pointer key);
 typedef bool (*equal_function)(arbitrary_pointer a, arbitrary_pointer b);
@@ -19,10 +20,12 @@ typedef struct{
 
     list* buckets;
     sizetype capacity;
+
+    allocator_implementation* allocator;
 }hash_map;
 
 // leave hash_function as nullptr to use default one
-status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype initial_capacity, hash_function hash, equal_function is_equal);
+status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype initial_capacity, hash_function hash, equal_function is_equal, allocator_implementation* allocator);
 
 status hmap_free(hash_map *map);
 
