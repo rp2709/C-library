@@ -4,20 +4,19 @@
 
 #include "Circular_Buffer.h"
 
-#include <stdlib.h>
-
 #include "../utils/generics_utils.h"
 
 sizetype physical_index(circular_buffer *cb, sizetype logical_index) {
     return (cb->start_index + logical_index) % cb->capacity;
 }
 
-status cibu_init(circular_buffer *buffer, sizetype object_size) {
+status cibu_init(circular_buffer *buffer, sizetype object_size, allocator_implementation* allocator) {
     buffer->start_index = 0;
     buffer->capacity = 0;
     buffer->object_size = object_size;
     buffer->length = 0;
     buffer->data = nullptr;
+    buffer->allocator = allocator;
     return cibu_reserve(buffer,1);
 }
 
@@ -25,7 +24,7 @@ status cibu_free(circular_buffer *buffer) {
     if (buffer->data == nullptr) {
         return WARNING;
     }
-    free(buffer->data);
+    buffer->allocator->free(buffer->data);
     buffer->data = nullptr;
 }
 
@@ -33,7 +32,7 @@ status cibu_reserve(circular_buffer *buffer, sizetype size) {
     if (buffer->capacity >= size)
         return WARNING;
 
-    arbitrary_pointer new_data = malloc(size * buffer->object_size);
+    arbitrary_pointer new_data = buffer->allocator->malloc(size * buffer->object_size);
 
     if (new_data == nullptr)
         return ERROR;
@@ -44,7 +43,7 @@ status cibu_reserve(circular_buffer *buffer, sizetype size) {
                 buffer->object_size);
     }
     if (buffer->data != nullptr)
-        free(buffer->data);
+        buffer->allocator->free(buffer->data);
 
     buffer->data = new_data;
     buffer->capacity = size;

@@ -12,7 +12,7 @@ int main(int argc, char** argv){
 
     circular_buffer cibu;
 
-    pedantic_assert(cibu_init(&cibu,sizeof(int)));
+    pedantic_assert(cibu_init(&cibu,sizeof(int),&FIRST_FIT));
     pedantic_assert(cibu_reserve(&cibu,5));
 
     for(int i=1;i<=10;i++) {
@@ -52,7 +52,7 @@ int main(int argc, char** argv){
     puts("\n\n Starting to test FIFO queue\n");
 
     fifo queue;
-    pedantic_assert(fifo_init(&queue,sizeof(int)));
+    pedantic_assert(fifo_init(&queue,sizeof(int),&FIRST_FIT));
     pedantic_assert(fifo_reserve(&queue,5));
 
     for(int i=1;i<=10;i++) {

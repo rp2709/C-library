@@ -4,6 +4,8 @@
 #include "../utils/Status.h"
 #include "../utils/Types.h"
 
+#include "../allocator/Allocator.h"
+
 typedef struct {
     arbitrary_pointer data;
     sizetype length;
@@ -11,9 +13,11 @@ typedef struct {
     sizetype start_index;
 
     sizetype object_size;
+
+    allocator_implementation* allocator;
 }circular_buffer;
 
-status cibu_init(circular_buffer *buffer, sizetype object_size);
+status cibu_init(circular_buffer *buffer, sizetype object_size, allocator_implementation* allocator);
 
 status cibu_free(circular_buffer *buffer);
 

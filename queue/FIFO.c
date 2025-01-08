@@ -1,10 +1,10 @@
 #include "FIFO.h"
 
-status fifo_init(fifo *f, sizetype object_size) {
-    return cibu_init(f,object_size);
+status fifo_init(fifo *f, sizetype object_size, allocator_implementation *allocator) {
+    return cibu_init(f,object_size,allocator);
 }
 
-status fifo_reserve(fifo *f, size_t size) {
+status fifo_reserve(fifo *f, sizetype size) {
     return cibu_reserve(f,size);
 }
 
