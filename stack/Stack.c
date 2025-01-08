@@ -1,7 +1,7 @@
 #include "Stack.h"
 
-status stack_init(stack *s, sizetype object_size) {
-    return dyna_init(s,object_size);
+status stack_init(stack *s, sizetype object_size,allocator_implementation* allocator) {
+    return dyna_init(s,object_size,allocator);
 }
 
 status stack_free(stack *s) {

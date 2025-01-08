@@ -2,10 +2,11 @@
 #define STACK_H
 
 #include "../dynamic_array/DynamicArray.h"
+#include "../allocator/Allocator.h"
 
 typedef dynamic_array stack;
 
-status stack_init(stack *s, sizetype object_size);
+status stack_init(stack *s, sizetype object_size,allocator_implementation* allocator);
 
 status stack_free(stack *s);
 
