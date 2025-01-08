@@ -1,13 +1,11 @@
 #include "LinkedList.h"
 
-#include <stdlib.h>
-
-void node_free(_node* node) {
+void node_free(_node* node, allocator_implementation* allocator) {
     if (node == nullptr)
         return;
     if (node->data != nullptr)
-        free(node->data);
-    free(node);
+        allocator->free(node->data);
+    allocator->free(node);
 }
 
 // ===== List manipulation with iterators =====
@@ -43,12 +41,12 @@ status list_at(const list_iterator iterator, arbitrary_pointer value) {
 }
 
 status list_insert(const list_iterator iterator, arbitrary_pointer value) {
-    _node* new_node = malloc(sizeof(_node));
+    _node* new_node = iterator.list->allocator->malloc(sizeof(_node));
     if (new_node == nullptr)
         return ERROR;
-    new_node->data = malloc(iterator.list->object_size);
+    new_node->data = iterator.list->allocator->malloc(iterator.list->object_size);
     if (new_node->data == nullptr) {
-        node_free(new_node);
+        node_free(new_node,iterator.list->allocator);
         return ERROR;
     }
 
@@ -67,27 +65,28 @@ status list_remove(const list_iterator iterator) {
 
     _node* removed_node = (_node*)iterator.current->next;
     iterator.current->next = removed_node->next;
-    node_free(removed_node);
+    node_free(removed_node,iterator.list->allocator);
     return OK;
 }
 
 // ===== Basic list operations =====
 
-status list_init(list* l, sizetype object_size) {
+status list_init(list* l, sizetype object_size, allocator_implementation* allocator) {
+    l->allocator = allocator;
     l->head = nullptr;
     l->object_size = object_size;
     return OK;
 }
 
-void node_recursive_free(_node* node) {
+void node_recursive_free(_node* node, allocator_implementation* allocator) {
     if (node == nullptr)
         return;
-    node_recursive_free((_node*)node->next);
-    node_free(node);
+    node_recursive_free((_node*)node->next,allocator);
+    node_free(node,allocator);
 }
 
 status list_free(list* l) {
-    node_recursive_free((_node*)l->head);
+    node_recursive_free((_node*)l->head,l->allocator);
     return OK;
 }
 

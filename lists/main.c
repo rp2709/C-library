@@ -5,7 +5,7 @@
 int main() {
 
   list l;
-  list_init(&l,sizeof(int));
+  list_init(&l,sizeof(int),&FIRST_FIT);
 
   for (int i = 0; i < 50; i++) {
     list_add_front(&l, &i);

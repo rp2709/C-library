@@ -4,6 +4,7 @@
 #include "../utils/generics_utils.h"
 #include "../utils/Status.h"
 #include "../utils/Types.h"
+#include "../allocator/Allocator.h"
 
 typedef struct {
     struct _node* next;
@@ -13,6 +14,7 @@ typedef struct {
 typedef struct {
     _node* head;
     sizetype object_size;
+    allocator_implementation* allocator;
 }list;
 
 typedef struct {
@@ -36,7 +38,7 @@ status list_remove(list_iterator iterator);
 
 // ===== Basic list operations =====
 
-status list_init(list* l, sizetype object_size);
+status list_init(list* l, sizetype object_size, allocator_implementation* allocator);
 
 status list_free(list* l);
 
