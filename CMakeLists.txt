@@ -25,3 +25,6 @@ target_link_libraries(LibList LibUtils LibAlloc)
 
 add_subdirectory(hash_map)
 target_link_libraries(LibHMap LibUtils LibList)
+
+add_subdirectory(concurrency)
+target_link_libraries(LibConcurrent LibUtils LibQueue)
