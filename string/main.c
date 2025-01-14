@@ -4,6 +4,8 @@
 
 int main() {
 
+    string_set_allocator(&FIRST_FIT);
+
     string_t str;
     string_init(&str, "Hello");
 

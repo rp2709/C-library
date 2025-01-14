@@ -1,32 +1,52 @@
 #include "String.h"
 
-#include <string.h>
 #include "../utils/generics_utils.h"
 
 const char null_char = '\0';
 
+allocator_implementation * allocator;
+
+void string_set_allocator(allocator_implementation* _allocator) {
+    allocator = _allocator;
+}
+
+sizetype c_string_length(const char* s) {
+    sizetype length = 0;
+    while (s[length])
+        ++length;
+    return length;
+}
+
 // ----- Constructors -----
 status string_init(string_t * str, const char * basic_string){
-    status rv = dyna_init(str,sizeof(char));
+    status rv = dyna_init(str,sizeof(char),allocator);
     if (!rv.success)
         return rv;
 
-    sizetype len = strlen(basic_string) + 1; // + 1 because we want to keep null termination
+    sizetype len = c_string_length(basic_string) + 1; // + 1 because we want to keep null termination
     rv = dyna_reserve(str,len);
     if (!rv.success)
         return rv;
 
     memcopy((arbitrary_pointer)basic_string,str->data,len * sizeof(char));
-    str->length = len - 1;
+    str->length = len;
     return OK;
 }
 
 status string_init_xchar(string_t* str, unsigned x, char c) {
-    dyna_init(str,sizeof(char));
-    dyna_reserve(str,x);
+    status rv = dyna_init(str,sizeof(char),allocator);
+    if (!rv.success)return rv;
+
+    rv = dyna_reserve(str,x+1);
+    if (!rv.success)return rv;
+
     for (unsigned i = 0; i < x; i++) {
-        dyna_append(str,&c);
+        rv = dyna_append(str,&c);
+        if (!rv.success)return rv;
     }
+    rv = dyna_append(str,&null_char);
+    if (!rv.success)return rv;
+
     return OK;
 }
 
@@ -49,14 +69,14 @@ status string_sub_to(string_t * dest, const string_t * origin, sizetype to);
 
 // ----- destructor -----
 
-status string_free(string_t * str) {
+void string_free(string_t * str) {
     dyna_free(str);
 }
 
 // ----- modifying -----
 
 status string_append(string_t * str, char c) {
-    status rv = dyna_set_at(str,str->length-1,&c);
+    status rv = dyna_set_at(str,string_length(str),&c);
     if (!rv.success)
         return rv;
     rv = dyna_append(str,&null_char);
@@ -69,7 +89,7 @@ status string_append(string_t * str, char c) {
 status string_concat(string_t * left, const string_t * right) {
     status s;
     char c;
-    for (sizetype i = 0; i < right->length; ++i) {
+    for (sizetype i = 0; i < string_length(right); ++i) {
         string_get_at(right,i,&c);
         s = string_append(left,c);
         if (!s.success)
@@ -79,6 +99,10 @@ status string_concat(string_t * left, const string_t * right) {
 }
 
 // ----- lookup -----
+
+inline sizetype string_length(const string_t * str) {
+    return str->length - 1; // Don't count the null termination
+}
 
 status string_get_at(const string_t * str, sizetype pos, char* c) {
     return dyna_get_at(str,pos,c);

@@ -10,6 +10,9 @@
  */
 typedef dynamic_array string_t;
 
+// ----- static method -----
+void string_set_allocator(allocator_implementation* _allocator);
+
 // ----- Constructors -----
 status string_init(string_t * str, const char * basic_string);
 
@@ -27,7 +30,7 @@ status string_sub_to(string_t * dest, const string_t * origin, sizetype to);
 
 // ----- destructor -----
 
-status string_free(string_t * str);
+void string_free(string_t * str);
 
 // ----- modifying -----
 
@@ -38,6 +41,8 @@ status string_concat(string_t * left, const string_t * right);
 status string_set_at(string_t * str, sizetype pos, char c);
 
 // ----- lookup -----
+
+sizetype string_length(const string_t * str);
 
 status string_get_at(const string_t * str, sizetype pos, char* c);
 
