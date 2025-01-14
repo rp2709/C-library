@@ -6,13 +6,18 @@
 #include "../utils/generics_utils.h"
 
 /**
+ * An internal error occurred in the allocator, probably system not having enough memory
+ */
+extern const status ALLOCATION_ERROR;
+
+/**
  * This is a basic allocator interface
  * All the library uses it, and therefor can easily use different allocator implementations
  * You get to tailor the data structures for space or time efficiency.
  */
 struct allocator {
     arbitrary_pointer (*malloc)(sizetype size);
-    status (*free)(arbitrary_pointer ptr);
+    void (*free)(arbitrary_pointer ptr);
     status (*realloc)(arbitrary_pointer* ptr, sizetype size);
 };
 typedef struct allocator allocator_implementation;

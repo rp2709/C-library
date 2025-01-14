@@ -43,11 +43,11 @@ status list_at(const list_iterator iterator, arbitrary_pointer value) {
 status list_insert(const list_iterator iterator, arbitrary_pointer value) {
     _node* new_node = iterator.list->allocator->malloc(sizeof(_node));
     if (new_node == nullptr)
-        return ERROR;
+        return ALLOCATION_ERROR;
     new_node->data = iterator.list->allocator->malloc(iterator.list->object_size);
     if (new_node->data == nullptr) {
         node_free(new_node,iterator.list->allocator);
-        return ERROR;
+        return ALLOCATION_ERROR;
     }
 
     memcopy(value, new_node->data, iterator.list->object_size);

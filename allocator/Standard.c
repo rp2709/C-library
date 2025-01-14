@@ -6,9 +6,8 @@ arbitrary_pointer stdmalloc(sizetype size) {
     return malloc(size);
 }
 
-status stdfree(arbitrary_pointer ptr) {
+void stdfree(arbitrary_pointer ptr) {
     free(ptr);
-    return OK;
 }
 
 status stdrealloc(arbitrary_pointer* ptr, sizetype size) {
@@ -16,7 +15,7 @@ status stdrealloc(arbitrary_pointer* ptr, sizetype size) {
     *ptr = realloc(*ptr, size);
     if (*ptr == nullptr) {
         *ptr = old;
-        return ERROR;
+        return ALLOCATION_ERROR;
     }
     return OK;
 }

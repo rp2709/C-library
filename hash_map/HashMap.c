@@ -1,5 +1,7 @@
 #include "HashMap.h"
 
+const status NO_SUCH_KEY = {_ERROR,"No such key","The key provided does not exist"};
+
 void hm_pair_free(_hmap_pair* pair, allocator_implementation* allocator) {
     if (pair == nullptr) return;
     if (pair->key != nullptr) {
@@ -27,10 +29,10 @@ status hmap_init(hash_map *map, sizetype key_size, sizetype value_size, sizetype
 
     map->buckets = map->allocator->malloc(initial_capacity * sizeof(list));
     if (map->buckets == nullptr)
-        return ERROR;
+        return ALLOCATION_ERROR;
 
     for (sizetype i = 0; i < initial_capacity; ++i) {
-        status rv = list_init(&(map->buckets[i]),sizeof(_hmap_pair));
+        status rv = list_init(&(map->buckets[i]),sizeof(_hmap_pair),map->allocator);
         if (!rv.success)
             return rv;
     }
@@ -59,11 +61,11 @@ status hmap_insert(hash_map *map, arbitrary_pointer key, arbitrary_pointer value
 
     arbitrary_pointer value_storage = map->allocator->malloc(map->value_size);
     if (value_storage == nullptr)
-        return ERROR;
+        return ALLOCATION_ERROR;
     arbitrary_pointer key_storage = map->allocator->malloc(map->key_size);
     if (key_storage == nullptr) {
         map->allocator->free(value_storage);
-        return ERROR;
+        return ALLOCATION_ERROR;
     }
 
     memcopy(key,key_storage,map->key_size);
@@ -87,7 +89,7 @@ status find_and_apply(hash_map *map, arbitrary_pointer key, arbitrary_pointer va
             return OK;
         }
     }
-    return ERROR;
+    return NO_SUCH_KEY;
 }
 
 void set_apply(arbitrary_pointer value, arbitrary_pointer destination, sizetype value_size) {
@@ -117,5 +119,5 @@ status hmap_remove(hash_map *map, arbitrary_pointer key) {
             return OK;
         }
     }
-    return ERROR;
+    return NO_SUCH_KEY;
 }

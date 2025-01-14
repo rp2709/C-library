@@ -7,9 +7,6 @@
 #include "../utils/Status.h"
 #include "../allocator/Allocator.h"
 
-extern status DYNA_ALLOCATION_ERROR;
-extern status DYNA_ILLEGAL_OPERATION;
-
 /**
  * Generic Dynamic Arrays
  * ALWAYS INITIALIZE THE ARRAY BEFORE USING IT

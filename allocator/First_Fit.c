@@ -147,28 +147,29 @@ arbitrary_pointer ff_malloc(sizetype size) {
     return chunk_given->start_address;
 }
 
-status ff_free(arbitrary_pointer ptr) {
+void ff_free(arbitrary_pointer ptr) {
 
     chunk_info* chunk = get_chunk_info(ptr);
     chunk->freed = true;
 
     try_merge_chunks(chunk, chunk->next);
     try_merge_chunks(chunk->prev, chunk);
-
-    return OK;
 }
 
+const status NEGATIVE_REALLOC = {
+    _ERROR, "No negative realloc", "realloc was called with a new size smaller than the one already allocated"
+};
 status ff_reallocate(arbitrary_pointer* ptr, sizetype size) {
     // reallocate on nullptr simply calls malloc
     if (*ptr == nullptr) {
         *ptr = ff_malloc(size);
-        return (*ptr == nullptr) ? ERROR : OK;
+        return (*ptr == nullptr) ? ALLOCATION_ERROR : OK;
     }
 
     chunk_info* chunk = get_chunk_info(*ptr);
 
     if (size < chunk->size)
-        return ERROR;
+        return NEGATIVE_REALLOC;
 
     // Check if we can merge with the next one
     if (chunk->next->freed && (arbitrary_pointer)chunk->start_address + chunk->size == (arbitrary_pointer)chunk->next) {
@@ -180,7 +181,7 @@ status ff_reallocate(arbitrary_pointer* ptr, sizetype size) {
     // Nope, let's malloc and copy over
     arbitrary_pointer new_ptr = ff_malloc(size);
     if (new_ptr == nullptr)
-        return ERROR;
+        return ALLOCATION_ERROR;
 
     memcopy(ptr, new_ptr, chunk->size);
 

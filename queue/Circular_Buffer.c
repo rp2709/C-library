@@ -35,7 +35,7 @@ status cibu_reserve(circular_buffer *buffer, sizetype size) {
     arbitrary_pointer new_data = buffer->allocator->malloc(size * buffer->object_size);
 
     if (new_data == nullptr)
-        return ERROR;
+        return ALLOCATION_ERROR;
 
     for (sizetype i = 0; i < buffer->length; ++i) {
         memcopy(buffer->data + physical_index(buffer, i) * buffer->object_size,
