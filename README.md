@@ -30,5 +30,15 @@ Genericity comes at a cost for certain data structures like lists and hash map w
 - `fifo`
 - `hash_map`
 
+### Safe and easy to use strings
+Strings are just dynamic arrays of characters. Which mean that all methods of dynamic array are usable on strings, plus some usefull stuff
+- Construct a string from a const char* or by repeating characters
+- A few substring options
+- A few find(_first/last_of) functions
+- String concat !
+- And finnaly, append to a string
+
+  Of course you can easily get a normal char pointer to use standard output function like printf. But for input, especially of strings, please use the provided replacement for scanf. 
+
 ## A final word
 This is utter shit and should not be used for anything serious.
